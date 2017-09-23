@@ -1,0 +1,48 @@
+<component name="libraryTable">
+  <library name="lwjgl">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-egl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-glfw.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-jemalloc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-openal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-opengl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-opengles.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-stb.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-egl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-glfw-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-jemalloc-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-openal-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-opengl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-opengles-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-stb-javadoc.jar!/" />
+    </JAVADOC>
+    <NATIVE>
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+      <root url="file://$PROJECT_DIR$/native" />
+    </NATIVE>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-egl-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-glfw-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-jemalloc-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-openal-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-opengl-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-opengles-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lwjgl_lib/lwjgl-stb-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
