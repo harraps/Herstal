@@ -41,10 +41,7 @@ class HalfEdge (var origin : Vertex) {
         faceLeft = faceOnLeft
 
         // call constructor a second time for the twin half edge
-        if (twinEdge == null)
-            _twin = HalfEdge(B, A, this, faceOnRight, faceOnLeft)
-        else
-            _twin = twinEdge
+        _twin = twinEdge ?: HalfEdge(B, A, this, faceOnRight, faceOnLeft)
 
         val edges = origin.edges()
         if (edges.size == 0) {
@@ -109,20 +106,24 @@ class HalfEdge (var origin : Vertex) {
             val angle = vec1.angle(vec2)
 
             // characterize the vertex
+            // use vectors direction along x axis
             var def = 0b0000
-            if      (vec1.x == 0.0 && vec2.x == 0.0) def = def or 0b0011
-            else if (vec1.x >= 0.0 && vec2.x >= 0.0) def = def or 0b0001
-            else if (vec1.x <= 0.0 && vec2.x <= 0.0) def = def or 0b0010
-            if      (angle > 0) def = def or 0b0100
-            else if (angle < 0) def = def or 0b1000
+            def = if (vec1.x == 0.0 && vec2.x == 0.0) def or 0b0011
+            else  if (vec1.x >= 0.0 && vec2.x >= 0.0) def or 0b0001
+            else  if (vec1.x <= 0.0 && vec2.x <= 0.0) def or 0b0010
+            else def
+            // use angle sign
+            def = if (angle > 0) def or 0b0100
+            else  if (angle < 0) def or 0b1000
+            else def
 
             // set the type based on the characterization
-            when (def) {
-                0b0101 -> label = VertexLabel.BEGIN
-                0b1001 -> label = VertexLabel.SPLIT
-                0b0110 -> label = VertexLabel.END
-                0b1010 -> label = VertexLabel.MERGE
-                else   -> label = VertexLabel.REGULAR
+            label = when (def) {
+                0b0101 -> VertexLabel.BEGIN
+                0b1001 -> VertexLabel.SPLIT
+                0b0110 -> VertexLabel.END
+                0b1010 -> VertexLabel.MERGE
+                else   -> VertexLabel.REGULAR
             }
         }
     }

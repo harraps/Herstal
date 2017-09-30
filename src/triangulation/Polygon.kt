@@ -69,6 +69,7 @@ class Polygon (outer : HalfEdge, val inners : Array<HalfEdge>) : MonoPolygon(out
                     status[under] = edge.origin
                     status[edge ] = edge.origin
                 }
+                else -> println("label not set")
             }
         }
         // set to keep only one edge per monotone polygon
@@ -79,10 +80,7 @@ class Polygon (outer : HalfEdge, val inners : Array<HalfEdge>) : MonoPolygon(out
             if (edge.twin.faceLeft)
                 uniques.add(edge.twin.selectFromLoop(selectFun))
         }
-        val monos = mutableSetOf<MonoPolygon>()
-        for (edge in uniques)
-            monos.add(MonoPolygon(edge))
-        return monos
+        return uniques.map { MonoPolygon(it) }.toMutableSet()
     }
 }
 

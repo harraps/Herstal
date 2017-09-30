@@ -10,7 +10,7 @@ class Vertex (val x : Double, val y : Double) {
     // one incident edge
     var incident : HalfEdge? = null
         set(edge) {
-            incident = edge
+            field = edge
             if (incident != null && incident?.origin == null)
                 incident?.origin = this
         }
@@ -59,12 +59,12 @@ class Vertex (val x : Double, val y : Double) {
 // return true if the point is above the edge formed by origin and dest
 fun isAbove(origin : Vertex, dest : Vertex, point : Vertex) : Boolean {
     if (point == origin) return false
-    val ang_dst = polarAngle(origin, dest)
-    val ang_pnt = polarAngle(origin, point)
-    return if (ang_dst > 0)
-        ang_pnt > ang_dst || ang_pnt < ang_dst - Math.PI
+    val angDst = polarAngle(origin, dest)
+    val angPnt = polarAngle(origin, point)
+    return if (angDst > 0)
+        angPnt > angDst || angPnt < angDst - Math.PI
     else
-        ang_dst < ang_pnt && ang_pnt < ang_dst + Math.PI
+        angDst < angPnt && angPnt < angDst + Math.PI
 }
 
 fun polarAngle(center : Vertex, point : Vertex) : Double {
@@ -89,10 +89,10 @@ fun aligned(p : Vector2d,
     val vecC = p.sub(a)
     val vecL = b.sub(a)
     if (Math.abs(cross(vecC, vecL)) > threshold) return false
-    if (Math.abs(vecL.x) >= Math.abs(vecL.y)) {
-        return if (vecL.x > 0) p.x in a.x .. b.x else p.x in b.x .. a.x
+    return if (Math.abs(vecL.x) >= Math.abs(vecL.y)) {
+        if (vecL.x > 0) p.x in a.x .. b.x else p.x in b.x .. a.x
     } else {
-        return if (vecL.y > 0) p.y in a.y .. b.y else p.y in b.y .. a.y
+        if (vecL.y > 0) p.y in a.y .. b.y else p.y in b.y .. a.y
     }
 }
 
@@ -106,10 +106,10 @@ fun intersection(a : Vector2d, b : Vector2d, c : Vector2d, d : Vector2d,
         ignoreCommon : Boolean = false) : Vector2d?
 {
     if (ignoreCommon) // ignore vertices in common
-        if (a.equals(c) || b.equals(d) || a.equals(d) || b.equals(c))
+        if (a == c || b == d || a == d || b == c)
             return null
-    else if (a.equals(c) || a.equals(d)) return a
-    else if (b.equals(d) || b.equals(c)) return b
+    else if (a == c || a == d) return a
+    else if (b == d || b == c) return b
 
     val p = c.sub(a)
     val q = c.sub(b)

@@ -10,11 +10,11 @@ open class MonoPolygon (val outer : HalfEdge) {
 
     fun ordered(order : Order) : List<HalfEdge> {
         val list = edges()
-        val comp = when (order) {
+        val comp : Comparator<HalfEdge> = when (order) {
             Order.LEXICOGRAPHIC ->
-                compareBy<HalfEdge>({it.origin.x},{it.origin.y})
+                compareBy({it.origin.x},{it.origin.y})
             Order.BOTTOM_UP     ->
-                compareBy<HalfEdge>({it.origin.y},{it.origin.x})
+                compareBy({it.origin.y}, {it.origin.x})
         }
         return list.sortedWith(comp)
     }
@@ -45,8 +45,7 @@ open class MonoPolygon (val outer : HalfEdge) {
         differentBranch(diagonals, stack, ordereds.last(), lowerBranch)
 
         // create all of the edges
-        for (diag in diagonals)
-            edges.add(HalfEdge(diag.first, diag.second, null, true, true))
+        diagonals.mapTo(edges) { HalfEdge(it.first, it.second, null, true, true) }
         edges.add(ordereds.last())
     }
 }
@@ -74,8 +73,7 @@ private fun sameBranch(
     // top of stack is end of vector
     for (i in (stack.lastIndex - 1) downTo 0) {
         val other = stack[i].origin
-        if (canTraceDiagonal(diagonals, stack, i, edge.origin, other,
-                             lowerBranch, 0.0))
+        if (canTraceDiagonal(stack, i, edge.origin, other, lowerBranch))
         {
             if (lowerBranch)
                 diagonals.add(Pair(edge.origin, other))
@@ -87,10 +85,8 @@ private fun sameBranch(
     stack.add(edge)
 }
 
-private fun canTraceDiagonal(
-        diagonals : MutableList<Pair<Vertex, Vertex>>,
-        stack : MutableList<HalfEdge>, stop : Int, a : Vertex, b : Vertex,
-        lowerBranch : Boolean, threshold : Double) : Boolean
+private fun canTraceDiagonal(stack : MutableList<HalfEdge>, stop : Int,
+                             a : Vertex, b : Vertex, lowerBranch : Boolean) : Boolean
 {
     // check that the segment AB is on the right side of the edge "top of stack"
     var edge = if (lowerBranch) stack.last() else stack.last().prev
@@ -103,7 +99,7 @@ private fun canTraceDiagonal(
         edge = if (lowerBranch) stack[i].prev else stack[i]
         if (intersect(edge.origin.coords(), edge.twin.origin.coords(),
                       a.coords(), b.coords(), true) ||
-                aligned(edge.origin.coords(), a.coords(), b.coords(), threshold))
+                aligned(edge.origin.coords(), a.coords(), b.coords(), 0.0))
             return false
     }
     return true
