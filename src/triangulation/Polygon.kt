@@ -1,12 +1,23 @@
 package triangulation
 
-class Polygon (outer : HalfEdge, val inners : Array<HalfEdge>) : MonoPolygon(outer)
-{
+class Polygon (val outer : HalfEdge, val inners : Array<HalfEdge>) {
 
-    override fun edges() : MutableCollection<HalfEdge> {
-        val edges = super.edges()
-        for (inner in inners) inner.loop(edges)
+    fun edges() : MutableCollection<HalfEdge> {
+        val edges = mutableSetOf<HalfEdge>()
+        outer gatherLoopIn edges
+        for (inner in inners) inner gatherLoopIn edges
         return edges
+    }
+
+    infix fun ordered(order : Order) : List<HalfEdge> {
+        val list = edges()
+        val comp : Comparator<HalfEdge> = when (order) {
+            Order.LEXICOGRAPHIC ->
+                compareBy({it.origin.x},{it.origin.y})
+            Order.BOTTOM_UP     ->
+                compareBy({it.origin.y}, {it.origin.x})
+        }
+        return list.sortedWith(comp)
     }
 
     fun markVertices() {
@@ -62,10 +73,9 @@ class Polygon (outer : HalfEdge, val inners : Array<HalfEdge>) : MonoPolygon(out
                 VertexLabel.SPLIT -> {
                     val under  = findUnder(status, edge.origin)
                     val helper = status[under]!!
-                    if (!edge.origin.areNeignbors(helper))
-                        selecteds.add(
-                                HalfEdge(edge.origin, helper, null, true, true)
-                                     )
+                    if (!(edge.origin isNeighborOf helper))
+                        selecteds.add(HalfEdge(
+                                edge.origin, helper, false, null, this, this))
                     status[under] = edge.origin
                     status[edge ] = edge.origin
                 }
@@ -75,12 +85,12 @@ class Polygon (outer : HalfEdge, val inners : Array<HalfEdge>) : MonoPolygon(out
         // set to keep only one edge per monotone polygon
         val uniques = mutableSetOf<HalfEdge>()
         for (edge in selecteds) {
-            if (edge.faceLeft)
-                uniques.add(edge.selectFromLoop(selectFun))
-            if (edge.twin.faceLeft)
-                uniques.add(edge.twin.selectFromLoop(selectFun))
+            if (this == edge.faceLeft)
+                uniques.add(edge selectFromLoop selectFun)
+            if (this == edge.twin.faceLeft)
+                uniques.add(edge.twin selectFromLoop selectFun)
         }
-        return uniques.map { MonoPolygon(it) }.toMutableSet()
+        return uniques.map { MonoPolygon(this, it) }.toMutableSet()
     }
 }
 

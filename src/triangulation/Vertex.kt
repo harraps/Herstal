@@ -9,11 +9,6 @@ class Vertex (val x : Double, val y : Double) {
 
     // one incident edge
     var incident : HalfEdge? = null
-        set(edge) {
-            field = edge
-            if (incident != null && incident?.origin == null)
-                incident?.origin = this
-        }
 
     fun destructor() {
         for (edge in edges())
@@ -24,7 +19,7 @@ class Vertex (val x : Double, val y : Double) {
         return Vector2d(x, y)
     }
 
-    fun vector(v : Vertex) : Vector2d {
+    infix fun vector(v : Vertex) : Vector2d {
         return Vector2d(v.x - x, v.y - y)
     }
 
@@ -40,7 +35,7 @@ class Vertex (val x : Double, val y : Double) {
         return edges
     }
 
-    fun findEdge(other : Vertex) : HalfEdge? {
+    infix fun findEdge(other : Vertex) : HalfEdge? {
         if (incident != null) {
             var current = incident!!
             do {
@@ -51,7 +46,7 @@ class Vertex (val x : Double, val y : Double) {
         }
         return null
     }
-    fun areNeignbors(other : Vertex) : Boolean {
+    infix fun isNeighborOf(other : Vertex) : Boolean {
         return findEdge(other) != null
     }
 }

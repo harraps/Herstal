@@ -4,7 +4,7 @@ import org.joml.Vector2d
 
 enum class Order { LEXICOGRAPHIC, BOTTOM_UP }
 
-class HalfEdge (var origin : Vertex) {
+class HalfEdge (val origin : Vertex, val fixed : Boolean, val faceLeft : Polygon) {
 
     var twin : HalfEdge
         get() = _twin
@@ -29,19 +29,15 @@ class HalfEdge (var origin : Vertex) {
     private lateinit var _prev : HalfEdge
     private lateinit var _next : HalfEdge
 
-    var faceLeft : Boolean = false
     var label : VertexLabel = VertexLabel.NOT_SET
-
+    var tri   : Triangle? = null
 
     // constructor used to link two Vertices and form an edge
-    constructor(A : Vertex, B : Vertex, twinEdge : HalfEdge?,
-            faceOnLeft  : Boolean, faceOnRight : Boolean) : this(A)
+    constructor(A : Vertex, B : Vertex, fixedEdge : Boolean, twinEdge : HalfEdge?,
+            faceOnLeft : Polygon, faceOnRight : Polygon) : this(A, fixedEdge, faceOnLeft)
     {
-        origin = A
-        faceLeft = faceOnLeft
-
         // call constructor a second time for the twin half edge
-        _twin = twinEdge ?: HalfEdge(B, A, this, faceOnRight, faceOnLeft)
+        _twin = twinEdge ?: HalfEdge(B, A, fixedEdge, this, faceOnRight, faceOnLeft)
 
         val edges = origin.edges()
         if (edges.size == 0) {
@@ -95,7 +91,7 @@ class HalfEdge (var origin : Vertex) {
     }
 
     fun vector() : Vector2d {
-        return origin.vector(twin.origin)
+        return origin vector twin.origin
     }
 
     // mark the vertex
@@ -113,9 +109,11 @@ class HalfEdge (var origin : Vertex) {
             else  if (vec1.x <= 0.0 && vec2.x <= 0.0) def or 0b0010
             else def
             // use angle sign
-            def = if (angle > 0) def or 0b0100
-            else  if (angle < 0) def or 0b1000
-            else def
+            def = when {
+                angle > 0 -> def or 0b0100
+                angle < 0 -> def or 0b1000
+                else      -> def
+            }
 
             // set the type based on the characterization
             label = when (def) {
@@ -129,7 +127,7 @@ class HalfEdge (var origin : Vertex) {
     }
 
     // gather all of the edges on the loop
-    fun loop(edges : MutableCollection<HalfEdge>) {
+    infix fun gatherLoopIn(edges : MutableCollection<HalfEdge>) {
         var current = this
         do {
             edges.add(current)
@@ -138,7 +136,7 @@ class HalfEdge (var origin : Vertex) {
     }
 
     // select one particular edge from the loop
-    fun selectFromLoop(
+    infix fun selectFromLoop(
             comp : (e1 : HalfEdge, e2 : HalfEdge) -> Boolean) : HalfEdge
     {
         var current  = this

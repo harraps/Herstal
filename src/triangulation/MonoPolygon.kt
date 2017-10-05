@@ -1,14 +1,14 @@
 package triangulation
 
-open class MonoPolygon (val outer : HalfEdge) {
+class MonoPolygon (val poly : Polygon, val outer : HalfEdge) {
 
-    open fun edges() : MutableCollection<HalfEdge> {
+    fun edges() : MutableCollection<HalfEdge> {
         val edges = mutableSetOf<HalfEdge>()
-        outer.loop(edges)
+        outer gatherLoopIn edges
         return edges
     }
 
-    fun ordered(order : Order) : List<HalfEdge> {
+    infix fun ordered(order : Order) : List<HalfEdge> {
         val list = edges()
         val comp : Comparator<HalfEdge> = when (order) {
             Order.LEXICOGRAPHIC ->
@@ -19,7 +19,7 @@ open class MonoPolygon (val outer : HalfEdge) {
         return list.sortedWith(comp)
     }
 
-    fun triangulate(edges : MutableCollection<HalfEdge>) {
+    infix fun triangulate(edges : MutableCollection<HalfEdge>) {
         // use edges to stay on the outline of the polygon
         val ordereds  = ordered(Order.LEXICOGRAPHIC)
         val stack     = mutableListOf<HalfEdge>()
@@ -34,7 +34,7 @@ open class MonoPolygon (val outer : HalfEdge) {
             val edge = ordereds[i]
             val top  = stack.last()
             // vertex is on the same branch as the top of the stack
-            if (edge.origin.areNeignbors(top.origin)) {
+            if (edge.origin isNeighborOf top.origin) {
                 sameBranch(diagonals, stack, edge, lowerBranch)
             } else {
                 differentBranch(diagonals, stack, edge, lowerBranch)
@@ -45,7 +45,7 @@ open class MonoPolygon (val outer : HalfEdge) {
         differentBranch(diagonals, stack, ordereds.last(), lowerBranch)
 
         // create all of the edges
-        diagonals.mapTo(edges) { HalfEdge(it.first, it.second, null, true, true) }
+        diagonals.mapTo(edges) { HalfEdge(it.first, it.second, false, null, poly, poly) }
         edges.add(ordereds.last())
     }
 }
