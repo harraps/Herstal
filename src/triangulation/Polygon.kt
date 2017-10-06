@@ -13,7 +13,7 @@ class Polygon (val outer : HalfEdge, val inners : Array<HalfEdge>) {
         val list = edges()
         val comp : Comparator<HalfEdge> = when (order) {
             Order.LEXICOGRAPHIC ->
-                compareBy({it.origin.x},{it.origin.y})
+                compareBy({it.origin.x}, {it.origin.y})
             Order.BOTTOM_UP     ->
                 compareBy({it.origin.y}, {it.origin.x})
         }
@@ -26,13 +26,20 @@ class Polygon (val outer : HalfEdge, val inners : Array<HalfEdge>) {
             current.markVertex()
             current = current.next
         } while (current != outer)
+        for (inner in inners) {
+            current = inner
+            do {
+                current.markVertex()
+                current = current.next
+            } while (current != inner)
+        }
     }
 
     fun triangulate() : MutableCollection<HalfEdge> {
         val monos = cutPolygon()
         val edges = mutableSetOf<HalfEdge>()
         for (mono in monos)
-            mono.triangulate(edges)
+            mono triangulateAndStore edges
         return edges
     }
 
@@ -79,16 +86,14 @@ class Polygon (val outer : HalfEdge, val inners : Array<HalfEdge>) {
                     status[under] = edge.origin
                     status[edge ] = edge.origin
                 }
-                else -> println("label not set")
+                else -> System.err.println("label not set: " + edge)
             }
         }
         // set to keep only one edge per monotone polygon
         val uniques = mutableSetOf<HalfEdge>()
         for (edge in selecteds) {
-            if (this == edge.faceLeft)
-                uniques.add(edge selectFromLoop selectFun)
-            if (this == edge.twin.faceLeft)
-                uniques.add(edge.twin selectFromLoop selectFun)
+            if (this == edge.     faceLeft) uniques.add(edge      selectFromLoop selectFun)
+            if (this == edge.twin.faceLeft) uniques.add(edge.twin selectFromLoop selectFun)
         }
         return uniques.map { MonoPolygon(this, it) }.toMutableSet()
     }

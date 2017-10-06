@@ -19,7 +19,7 @@ class MonoPolygon (val poly : Polygon, val outer : HalfEdge) {
         return list.sortedWith(comp)
     }
 
-    infix fun triangulate(edges : MutableCollection<HalfEdge>) {
+    infix fun triangulateAndStore(edges : MutableCollection<HalfEdge>) {
         // use edges to stay on the outline of the polygon
         val ordereds  = ordered(Order.LEXICOGRAPHIC)
         val stack     = mutableListOf<HalfEdge>()
@@ -34,9 +34,9 @@ class MonoPolygon (val poly : Polygon, val outer : HalfEdge) {
             val edge = ordereds[i]
             val top  = stack.last()
             // vertex is on the same branch as the top of the stack
-            if (edge.origin isNeighborOf top.origin) {
-                sameBranch(diagonals, stack, edge, lowerBranch)
-            } else {
+            if (edge.origin isNeighborOf top.origin)
+                sameBranch     (diagonals, stack, edge, lowerBranch)
+            else {
                 differentBranch(diagonals, stack, edge, lowerBranch)
                 lowerBranch = !lowerBranch
             }

@@ -49,6 +49,10 @@ class Vertex (val x : Double, val y : Double) {
     infix fun isNeighborOf(other : Vertex) : Boolean {
         return findEdge(other) != null
     }
+
+    override fun toString() : String {
+        return x.toString() + ',' + y.toString()
+    }
 }
 
 // return true if the point is above the edge formed by origin and dest

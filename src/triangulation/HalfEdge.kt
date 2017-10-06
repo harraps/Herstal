@@ -4,7 +4,7 @@ import org.joml.Vector2d
 
 enum class Order { LEXICOGRAPHIC, BOTTOM_UP }
 
-class HalfEdge (val origin : Vertex, val fixed : Boolean, val faceLeft : Polygon) {
+class HalfEdge (val origin : Vertex, val fixed : Boolean, val faceLeft : Polygon?) {
 
     var twin : HalfEdge
         get() = _twin
@@ -34,7 +34,7 @@ class HalfEdge (val origin : Vertex, val fixed : Boolean, val faceLeft : Polygon
 
     // constructor used to link two Vertices and form an edge
     constructor(A : Vertex, B : Vertex, fixedEdge : Boolean, twinEdge : HalfEdge?,
-            faceOnLeft : Polygon, faceOnRight : Polygon) : this(A, fixedEdge, faceOnLeft)
+            faceOnLeft : Polygon?, faceOnRight : Polygon?) : this(A, fixedEdge, faceOnLeft)
     {
         // call constructor a second time for the twin half edge
         _twin = twinEdge ?: HalfEdge(B, A, fixedEdge, this, faceOnRight, faceOnLeft)
@@ -147,6 +147,18 @@ class HalfEdge (val origin : Vertex, val fixed : Boolean, val faceLeft : Polygon
                 selected = current
         } while(current != this)
         return selected
+    }
+
+    override fun toString() : String {
+        val type = when (label) {
+            VertexLabel.BEGIN   -> "begin"
+            VertexLabel.MERGE   -> "merge"
+            VertexLabel.REGULAR -> "regular"
+            VertexLabel.SPLIT   -> "split"
+            VertexLabel.END     -> "end"
+            else -> "not set"
+        }
+        return origin.toString() + " -> " + twin.origin.toString() + " : " + type
     }
 }
 
