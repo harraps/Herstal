@@ -30,11 +30,13 @@ class HalfEdge (val origin : Vertex, val fixed : Boolean, val faceLeft : Polygon
     private lateinit var _next : HalfEdge
 
     var label : VertexLabel = VertexLabel.NOT_SET
-    var tri   : Triangle? = null
+    var index : Int = -1 // indicate the index of the edge (for swapping)
 
     // constructor used to link two Vertices and form an edge
-    constructor(A : Vertex, B : Vertex, fixedEdge : Boolean, twinEdge : HalfEdge?,
-            faceOnLeft : Polygon?, faceOnRight : Polygon?) : this(A, fixedEdge, faceOnLeft)
+    constructor(A          : Vertex   , B           : Vertex   ,
+                fixedEdge  : Boolean  , twinEdge    : HalfEdge?,
+                faceOnLeft : Polygon? , faceOnRight : Polygon? )
+            : this(A, fixedEdge, faceOnLeft)
     {
         // call constructor a second time for the twin half edge
         _twin = twinEdge ?: HalfEdge(B, A, fixedEdge, this, faceOnRight, faceOnLeft)

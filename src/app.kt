@@ -40,12 +40,17 @@ fun main(args: Array<String>) {
     val poly = Polygon(outer!!, arrayOf<HalfEdge>(inner!!))
 
     val list1 = mutableListOf<HalfEdge>()
-    val tris = poly.triangulate()
-    for (edge in tris) {
+    /*
+    val monos = poly.cutPolygon()
+    for (mono in monos) {
+        mono.outer gatherLoopIn list1
+    } // */
+    //*
+    val tris = poly.makeTriMesh()
+    //tris.legalize()
+    for (edge in tris.edges) {
         edge gatherLoopIn list1
-    }
-    //outer.gatherLoopIn(list1)
-    //inners[0].gatherLoopIn(list1)
+    } // */
 
     val s = Success(list1)
     s.isVisible = true

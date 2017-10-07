@@ -35,12 +35,12 @@ class Polygon (val outer : HalfEdge, val inners : Array<HalfEdge>) {
         }
     }
 
-    fun triangulate() : MutableCollection<HalfEdge> {
+    fun makeTriMesh() : TriMesh {
         val monos = cutPolygon()
-        val edges = mutableSetOf<HalfEdge>()
+        val trimesh = TriMesh()
         for (mono in monos)
-            mono triangulateAndStore edges
-        return edges
+            mono triangulate trimesh
+        return trimesh
     }
 
     fun cutPolygon() : MutableCollection<MonoPolygon> {

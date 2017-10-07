@@ -19,7 +19,7 @@ class MonoPolygon (val poly : Polygon, val outer : HalfEdge) {
         return list.sortedWith(comp)
     }
 
-    infix fun triangulateAndStore(edges : MutableCollection<HalfEdge>) {
+    infix fun triangulate(trimesh : TriMesh) {
         // use edges to stay on the outline of the polygon
         val ordereds  = ordered(Order.LEXICOGRAPHIC)
         val stack     = mutableListOf<HalfEdge>()
@@ -45,8 +45,9 @@ class MonoPolygon (val poly : Polygon, val outer : HalfEdge) {
         differentBranch(diagonals, stack, ordereds.last(), lowerBranch)
 
         // create all of the edges
-        diagonals.mapTo(edges) { HalfEdge(it.first, it.second, false, null, poly, poly) }
-        edges.add(ordereds.last())
+        for (diag in diagonals)
+            trimesh add HalfEdge(diag.first, diag.second, false, null, poly, poly)
+        trimesh add ordereds.last()
     }
 }
 
@@ -71,17 +72,20 @@ private fun sameBranch(
         stack : MutableList<HalfEdge>, edge : HalfEdge, lowerBranch : Boolean)
 {
     // top of stack is end of vector
-    for (i in (stack.lastIndex - 1) downTo 0) {
-        val other = stack[i].origin
-        if (canTraceDiagonal(stack, i, edge.origin, other, lowerBranch))
+    var other = stack.last()
+    for (i in stack.lastIndex downTo 1) {
+        other = stack[i]
+        if (canTraceDiagonal(stack, i, edge.origin, other.origin, lowerBranch))
         {
             if (lowerBranch)
-                diagonals.add(Pair(edge.origin, other))
+                diagonals.add(Pair(edge.origin, other.origin))
             else
-                diagonals.add(Pair(other, edge.origin))
+                diagonals.add(Pair(other.origin, edge.origin))
             stack.removeAt(i)
         } else break
+
     }
+    stack.add(other)
     stack.add(edge)
 }
 
@@ -90,16 +94,19 @@ private fun canTraceDiagonal(stack : MutableList<HalfEdge>, stop : Int,
 {
     // check that the segment AB is on the right side of the edge "top of stack"
     var edge = if (lowerBranch) stack.last() else stack.last().prev
-    val vector = if (lowerBranch) edge.vector().normalize().negate() else edge.vector().normalize()
-    val vectorAB = a.vector(b).normalize()
 
+    val vector = if (lowerBranch) edge.vector().negate() else edge.vector()
+    val vectorAB = a.vector(b)
     val angle = vector.angle(vectorAB)
     if (if (lowerBranch) angle >= 0 else angle <= 0) return false
-    for (i in (stack.lastIndex - 1) downTo  stop) {
+
+    for (i in (stack.lastIndex - 1) downTo stop) {
         edge = if (lowerBranch) stack[i].prev else stack[i]
-        if (intersect(edge.origin.coords(), edge.twin.origin.coords(),
-                      a.coords(), b.coords(), true) ||
-                aligned(edge.origin.coords(), a.coords(), b.coords(), 0.0))
+        val e1 = edge.     origin.coords()
+        val e2 = edge.twin.origin.coords()
+        val ac = a.coords()
+        val bc = b.coords()
+        if (intersect(e1,e2,ac,bc,true) || aligned(e1,ac,bc,0.00001))
             return false
     }
     return true
